@@ -1,19 +1,11 @@
 " =============================================================================
 " File: ftplugin/tex.vim
-" Description: Provide foldexpr and foldtext for TeX files
-" Author: Matthias Vogelgesang <github.com/matze>
+" Description: Fork -> Provide foldexpr and foldtext for TeX files
+" Author: Iury Xavier <github.com/iuryxavier>
 "
 " =============================================================================
 
 "{{{ Globals
-
-if !exists('g:tex_fold_sec_char')
-    let g:tex_fold_sec_char = '➜'
-endif
-
-if !exists('g:tex_fold_env_char')
-    let g:tex_fold_env_char = '✎'
-endif
 
 if !exists('g:tex_fold_override_foldtext')
     let g:tex_fold_override_foldtext = 1
@@ -29,10 +21,6 @@ endif
 
 if !exists('g:tex_fold_use_default_envs')
     let g:tex_fold_use_default_envs = 1
-endif
-
-if !exists('g:tex_fold_ignore_envs')
-    let g:tex_fold_ignore_envs = 0
 endif
 
 "}}}
@@ -54,28 +42,6 @@ function! TeXFold(lnum)
         \['frame', 'table', 'figure', 'align', 'lstlisting']: []
     let envs = '\(' . join(default_envs + g:tex_fold_additional_envs, '\|') . '\)'
 
-    if line =~ '^\s*\\section'
-        return '>1'
-    endif
-
-    if line =~ '^\s*\\subsection'
-        return '>2'
-    endif
-
-    if line =~ '^\s*\\subsubsection'
-        return '>3'
-    endif
-
-    if !g:tex_fold_ignore_envs
-        if line =~ '^\s*\\begin{' . envs
-            return 'a1'
-        endif
-
-        if line =~ '^\s*\\end{' . envs
-            return 's1'
-        endif
-    endif
-
     if g:tex_fold_allow_marker
         if line =~ '^[^%]*%[^{]*{{{'
             return 'a1'
@@ -92,13 +58,7 @@ endfunction
 function! TeXFoldText()
     let fold_line = getline(v:foldstart)
 
-    if fold_line =~ '^\s*\\\(sub\)*section'
-        let pattern = '\\\(sub\)*section{\([^}]*\)}'
-        let repl = ' ' . g:tex_fold_sec_char . ' \2'
-    elseif fold_line =~ '^\s*\\begin'
-        let pattern = '\\begin{\([^}]*\)}'
-        let repl = ' ' . g:tex_fold_env_char . ' \1'
-    elseif fold_line =~ '^[^%]*%[^{]*{{{'
+    if fold_line =~ '^[^%]*%[^{]*{{{'
         let pattern = '^[^{]*{' . '{{\([.]*\)'
         let repl = '\1'
     endif
